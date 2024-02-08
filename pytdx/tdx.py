@@ -70,14 +70,12 @@ class Tdx:
         if self.is_admin:
             auth_url = self.tdx_api_base_url + "/api/auth/loginadmin"
             payload = json.dumps(
-                {"BEID": self.tdx_username, "WebServicesKey": self.tdx_password}
+                {"BEID": self.username, "WebServicesKey": self.password}
             )
 
         else:
             auth_url = self.tdx_api_base_url + "/api/auth"
-            payload = json.dumps(
-                {"username": self.tdx_username, "password": self.tdx_password}
-            )
+            payload = json.dumps({"username": self.username, "password": self.password})
 
         headers = {
             "Content-Type": "application/json",
