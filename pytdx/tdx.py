@@ -1,6 +1,5 @@
 import requests
 import json
-import os
 from urllib.parse import urlencode
 from requests.adapters import HTTPAdapter, Retry
 import logging
