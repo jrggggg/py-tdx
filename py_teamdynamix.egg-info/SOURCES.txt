@@ -9,3 +9,4 @@ pytdx/__init__.py
 pytdx/tdx.py
 tests/__init__.py
 tests/asset_tests.py
+tests/ticket_tests.py

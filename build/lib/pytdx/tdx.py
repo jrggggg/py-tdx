@@ -97,30 +97,56 @@ class Tdx:
         """
         Base method for TDX API Requests
         """
+        methods = ["GET", "PUT", "PATCH", "POST", "DELETE"]
+        if method not in methods:
+            raise ValueError("Method must be one of GET, PUT, PATCH, POST, or DELETE")
+
         if data:
             data = json.dumps(data)
 
-        match method:
-            case "GET":
-                response = self.session.get(url, headers=self.default_header)
-            case "PUT":
-                response = self.session.put(url, headers=self.default_header, data=data)
-            case "PATCH":
-                response = self.session.patch(
-                    url, headers=self.default_header, data=data
-                )
-            case "POST":
-                response = self.session.post(
-                    url, headers=self.default_header, data=data
-                )
-            case "DELETE":
-                response = self.session.delete(url, headers=self.default_header)
-            case _:
-                raise Exception(
-                    "Method must be one of GET, PUT, PATCH, POST, or DELETE"
-                )
+        try:
+            match method:
+                case "GET":
+                    response = self.session.get(url, headers=self.default_header)
+                case "PUT":
+                    response = self.session.put(
+                        url, headers=self.default_header, data=data
+                    )
+                case "PATCH":
+                    response = self.session.patch(
+                        url, headers=self.default_header, data=data
+                    )
+                case "POST":
+                    response = self.session.post(
+                        url, headers=self.default_header, data=data
+                    )
+                case "DELETE":
+                    response = self.session.delete(url, headers=self.default_header)
+            response.raise_for_status()
 
-        return response.json()
+        except requests.exceptions.HTTPError as errh:
+            raise Exception("Http Error: " + str(errh))
+        except requests.exceptions.ConnectionError as errc:
+            raise Exception("Error Connecting: " + str(errc))
+        except requests.exceptions.Timeout as errt:
+            raise Exception("Timeout Error: " + str(errt))
+        except requests.exceptions.RequestException as err:
+            raise Exception("Error: " + str(err))
+
+        try:
+            content_length = int(response.headers.get("Content-Length", 0))
+        except ValueError:
+            content_length = 0
+
+        if content_length > 0:
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                raise Exception(
+                    "JSON decoding error: Unable to parse response body as JSON"
+                )
+        else:
+            return {"status_code": response.status_code}
 
     #
     # TICKETS
