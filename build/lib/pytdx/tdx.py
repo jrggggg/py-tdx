@@ -125,6 +125,43 @@ class Tdx:
     #
     # TICKETS
     #
+    def get_ticket(self, ticket_id: int):
+        url = (
+            self.tdx_api_base_url + f"/api/{self.ticketing_app_id}/tickets/{ticket_id}"
+        )
+        return self.request("GET", url=url)
+
+    def create_ticket_feed_entry(
+        self,
+        ticket_id: int,
+        comments: str,
+        is_rich_html: bool = True,
+        is_private: bool = True,
+        notify: list | bool = False,
+    ):
+        url = (
+            self.tdx_api_base_url
+            + f"/api/{self.ticketing_app_id}/tickets/{ticket_id}/feed"
+        )
+
+        payload = {
+            "NewStatusID": None,
+            "Comments": comments,
+            "IsPrivate": is_private,
+            "IsRichHtml": is_rich_html,
+        }
+
+        if notify:
+            payload["Notify"] = notify
+
+        return self.request("POST", url=url, data=payload)
+
+    def add_asset_to_ticket(self, ticket_id: int, asset_id: int):
+        url = (
+            self.tdx_api_base_url
+            + f"/api/{self.ticketing_app_id}/tickets/{ticket_id}/assets/{asset_id}"
+        )
+        return self.request("POST", url=url)
 
     #
     # TICKET TYPES
@@ -224,6 +261,16 @@ class Tdx:
         """
         url = self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/{asset_id}"
         return self.request(method="PATCH", url=url, data=patch_payload)
+
+    def create_asset(
+        self,
+        payload: dict,
+    ) -> dict:
+        """
+        Create an Asset
+        """
+        url = self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets"
+        return self.request(method="POST", url=url, data=payload)
 
     def get_asset_id_by_serial(self, serial_number: str) -> dict:
         """

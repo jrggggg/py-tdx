@@ -7,8 +7,6 @@ load_dotenv()
 
 conn_info = json.loads(os.getenv("TDX_CONN"))
 
-print(conn_info[0])
-print(conn_info[1])
 
 tdx_client = Tdx(
     username=conn_info[0],
@@ -20,3 +18,6 @@ tdx_client = Tdx(
     ticketing_app_id=conn_info[6],
     is_admin=conn_info[7],
 )
+
+
+print(tdx_client.get_asset(asset_id=1145451))
