@@ -6,7 +6,7 @@ import json
 
 load_dotenv()
 
-conn_info = json.loads(os.environ("TDX_SB_CONN"))
+conn_info = json.loads(os.environ.get("TDX_SB_CONN"))
 
 
 @pytest.fixture
