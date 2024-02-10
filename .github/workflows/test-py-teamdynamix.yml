@@ -38,4 +38,4 @@ jobs:
       env:
         TDX_SB_CONN: ${{ secrets.TDX_SB_CONN }}
       run: |
-        pytest
+        pytest -s

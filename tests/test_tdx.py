@@ -1,12 +1,11 @@
 import pytest
 from pytdx.tdx import Tdx
 import os
-from dotenv import load_dotenv
 import json
+import base64
 
-load_dotenv()
-
-conn_info = json.loads(os.environ.get("TDX_SB_CONN"))
+conn_info_encoded = os.environ.get("TDX_SB_CONN")
+conn_info = json.loads(base64.b64decode(conn_info_encoded))
 
 
 @pytest.fixture
@@ -27,5 +26,7 @@ def test_get_asset(tdx_client):
     result = tdx_client.get_asset(asset_id=1145451)
 
     response_test_data = {"ID": 1145451}
+
+    print(json.dumps(result, indent=4))
 
     assert result["ID"] == response_test_data["ID"]
