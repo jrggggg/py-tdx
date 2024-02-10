@@ -1,8 +1,8 @@
-name: Publish Python 🐍 distribution 📦 to PyPI
+name: Publish py-teamdynamix
 
 on: 
   workflow_run:
-    workflows: ["CI build"]
+    workflows: ["Test py-teamdynamix"]
     types:
       - completed
 
