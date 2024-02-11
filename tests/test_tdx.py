@@ -24,15 +24,14 @@ def tdx_client():
 
 def test_get_asset(tdx_client):
     result = tdx_client.get_asset(asset_id=1145451)
-
-    print(json.dumps(result, indent=4))
-
     assert result["ID"] == 1145451
 
 
 def test_get_ticket(tdx_client):
     result = tdx_client.get_ticket(ticket_id=20896274)
-
-    print(json.dumps(result, indent=4))
-
     assert result["ID"] == 20896274
+
+
+def test_get_kb_article(tdx_client):
+    result = tdx_client.get_kb_article(kb_article_id=141785)
+    assert result["ID"] == 141785
