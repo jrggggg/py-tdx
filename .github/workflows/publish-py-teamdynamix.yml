@@ -1,4 +1,4 @@
-name: Publish py-teamdynamix
+name: test-build-publish
 
 on:
   push:
