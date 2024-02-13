@@ -1,5 +1,5 @@
 # py-teamdynamix
-Python client for interacting with the TeamDynamix (TDX) ITSM APIs. The TDX API documentation is viewable via {yourorg}.teamdynamix.com/TDWebAPI.
+Python client for interacting with the TeamDynamix (TDX) ITSM APIs. The TDX API documentation is viewable via `{yourorg}.teamdynamix.com/TDWebAPI`.
 
 # Authentication 
 A [TeamDynamix service account](https://solutions.teamdynamix.com/TDClient/1965/Portal/KB/ArticleDet?ID=132442) is required to use this client.  

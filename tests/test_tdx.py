@@ -23,8 +23,9 @@ def tdx_client():
 
 
 def test_get_asset(tdx_client):
-    result = tdx_client.get_asset(asset_id=1145451)
-    assert result["ID"] == 1145451
+    result = tdx_client.get_asset_with_model(asset_id=1145451)
+    print(result.owning_customer_name)
+    assert result.id == 1145451
 
 
 def test_get_ticket(tdx_client):
