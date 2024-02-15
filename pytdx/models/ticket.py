@@ -1,158 +1,428 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field
+from typing import Optional, List
 
 
-class AttributeChoice(BaseModel):
-    id: Optional[int] = Field(alias="ID")
-    name: Optional[str] = Field(alias="Name")
-    is_active: Optional[bool] = Field(alias="IsActive")
-    date_created: Optional[str] = Field(alias="DateCreated")
-    date_modified: Optional[str] = Field(alias="DateModified")
-    order: Optional[int] = Field(alias="Order")
+class BaseClass:
+    def to_dict(self):
+        return {key: value for key, value in vars(self).items() if value is not None}
 
 
-class Attribute(BaseModel):
-    id: Optional[int] = Field(alias="ID")
-    name: Optional[str] = Field(alias="Name")
-    order: Optional[int] = Field(alias="Order")
-    description: Optional[str] = Field(alias="Description")
-    section_id: Optional[int] = Field(alias="SectionID")
-    section_name: Optional[str] = Field(alias="SectionName")
-    field_type: Optional[str] = Field(alias="FieldType")
-    data_type: Optional[str] = Field(alias="DataType")
-    choices: Optional[List[AttributeChoice]] = Field(alias="Choices")
-    is_required: Optional[bool] = Field(alias="IsRequired")
-    is_updatable: Optional[bool] = Field(alias="IsUpdatable")
-    value: Optional[str] = Field(alias="Value")
-    value_text: Optional[str] = Field(alias="ValueText")
-    choices_text: Optional[str] = Field(alias="ChoicesText")
-    associated_item_ids: Optional[List[int]] = Field(alias="AssociatedItemIDs")
+class NotifyItem(BaseClass):
+    def __init__(
+        self,
+        ItemRole: Optional[str] = None,
+        Name: Optional[str] = None,
+        Initials: Optional[str] = None,
+        Value: Optional[str] = None,
+        RefValue: Optional[int] = None,
+        ProfileImageFileName: Optional[str] = None,
+    ):
+        self.ItemRole = ItemRole
+        self.Name = Name
+        self.Initials = Initials
+        self.Value = Value
+        self.RefValue = RefValue
+        self.ProfileImageFileName = ProfileImageFileName
 
 
-class NotifyItem(BaseModel):
-    item_role: Optional[str] = Field(alias="ItemRole")
-    name: Optional[str] = Field(alias="Name")
-    initials: Optional[str] = Field(alias="Initials")
-    value: Optional[str] = Field(alias="Value")
-    ref_value: Optional[int] = Field(alias="RefValue")
-    profile_image_file_name: Optional[str] = Field(alias="ProfileImageFileName")
+class AttributeItem(BaseClass):
+    def __init__(
+        self,
+        ID: Optional[int] = None,
+        Name: Optional[str] = None,
+        Order: Optional[int] = None,
+        Description: Optional[str] = None,
+        SectionID: Optional[int] = None,
+        SectionName: Optional[str] = None,
+        FieldType: Optional[str] = None,
+        DataType: Optional[str] = None,
+        Choices: Optional[List[str]] = None,
+        IsRequired: Optional[bool] = None,
+        IsUpdatable: Optional[bool] = None,
+        Value: Optional[str] = None,
+        ValueText: Optional[str] = None,
+        ChoicesText: Optional[str] = None,
+        AssociatedItemIDs: Optional[List[int]] = None,
+    ):
+        self.ID = ID
+        self.Name = Name
+        self.Order = Order
+        self.Description = Description
+        self.SectionID = SectionID
+        self.SectionName = SectionName
+        self.FieldType = FieldType
+        self.DataType = DataType
+        self.Choices = Choices
+        self.IsRequired = IsRequired
+        self.IsUpdatable = IsUpdatable
+        self.Value = Value
+        self.ValueText = ValueText
+        self.ChoicesText = ChoicesText
+        self.AssociatedItemIDs = AssociatedItemIDs
 
 
-class TicketModel(BaseModel):
-    id: Optional[int] = Field(alias="ID")
-    parent_id: Optional[int] = Field(alias="ParentID")
-    parent_title: Optional[str] = Field(alias="ParentTitle")
-    parent_class: Optional[int] = Field(alias="ParentClass")
-    type_id: Optional[int] = Field(alias="TypeID")
-    type_name: Optional[str] = Field(alias="TypeName")
-    type_category_id: Optional[int] = Field(alias="TypeCategoryID")
-    type_category_name: Optional[str] = Field(alias="TypeCategoryName")
-    classification: Optional[int] = Field(alias="Classification")
-    classification_name: Optional[str] = Field(alias="ClassificationName")
-    form_id: Optional[int] = Field(alias="FormID")
-    form_name: Optional[str] = Field(alias="FormName")
-    title: Optional[str] = Field(alias="Title")
-    description: Optional[str] = Field(alias="Description")
-    is_rich_html: Optional[bool] = Field(alias="IsRichHtml")
-    uri: Optional[str] = Field(alias="Uri")
-    account_id: Optional[int] = Field(alias="AccountID")
-    account_name: Optional[str] = Field(alias="AccountName")
-    source_id: Optional[int] = Field(alias="SourceID")
-    source_name: Optional[str] = Field(alias="SourceName")
-    status_id: Optional[int] = Field(alias="StatusID")
-    status_name: Optional[str] = Field(alias="StatusName")
-    status_class: Optional[int] = Field(alias="StatusClass")
-    impact_id: Optional[int] = Field(alias="ImpactID")
-    impact_name: Optional[str] = Field(alias="ImpactName")
-    urgency_id: Optional[int] = Field(alias="UrgencyID")
-    urgency_name: Optional[str] = Field(alias="UrgencyName")
-    priority_id: Optional[int] = Field(alias="PriorityID")
-    priority_name: Optional[str] = Field(alias="PriorityName")
-    priority_order: Optional[float] = Field(alias="PriorityOrder")
-    sla_id: Optional[int] = Field(alias="SlaID")
-    sla_name: Optional[str] = Field(alias="SlaName")
-    is_sla_violated: Optional[bool] = Field(alias="IsSlaViolated")
-    is_sla_respond_by_violated: Optional[bool] = Field(alias="IsSlaRespondByViolated")
-    is_sla_resolve_by_violated: Optional[bool] = Field(alias="IsSlaResolveByViolated")
-    respond_by_date: Optional[str] = Field(alias="RespondByDate")
-    resolve_by_date: Optional[str] = Field(alias="ResolveByDate")
-    sla_begin_date: Optional[str] = Field(alias="SlaBeginDate")
-    is_on_hold: Optional[bool] = Field(alias="IsOnHold")
-    placed_on_hold_date: Optional[str] = Field(alias="PlacedOnHoldDate")
-    goes_off_hold_date: Optional[str] = Field(alias="GoesOffHoldDate")
-    created_date: Optional[str] = Field(alias="CreatedDate")
-    created_uid: Optional[str] = Field(alias="CreatedUid")
-    created_full_name: Optional[str] = Field(alias="CreatedFullName")
-    created_email: Optional[str] = Field(alias="CreatedEmail")
-    modified_date: Optional[str] = Field(alias="ModifiedDate")
-    modified_uid: Optional[str] = Field(alias="ModifiedUid")
-    modified_full_name: Optional[str] = Field(alias="ModifiedFullName")
-    requestor_name: Optional[str] = Field(alias="RequestorName")
-    requestor_first_name: Optional[str] = Field(alias="RequestorFirstName")
-    requestor_last_name: Optional[str] = Field(alias="RequestorLastName")
-    requestor_email: Optional[str] = Field(alias="RequestorEmail")
-    requestor_phone: Optional[str] = Field(alias="RequestorPhone")
-    requestor_uid: Optional[str] = Field(alias="RequestorUid")
-    actual_minutes: Optional[int] = Field(alias="ActualMinutes")
-    estimated_minutes: Optional[int] = Field(alias="EstimatedMinutes")
-    days_old: Optional[int] = Field(alias="DaysOld")
-    start_date: Optional[str] = Field(alias="StartDate")
-    end_date: Optional[str] = Field(alias="EndDate")
-    responsible_uid: Optional[str] = Field(alias="ResponsibleUid")
-    responsible_full_name: Optional[str] = Field(alias="ResponsibleFullName")
-    responsible_email: Optional[str] = Field(alias="ResponsibleEmail")
-    responsible_group_id: Optional[int] = Field(alias="ResponsibleGroupID")
-    responsible_group_name: Optional[str] = Field(alias="ResponsibleGroupName")
-    responded_date: Optional[str] = Field(alias="RespondedDate")
-    responded_uid: Optional[str] = Field(alias="RespondedUid")
-    responded_full_name: Optional[str] = Field(alias="RespondedFullName")
-    completed_date: Optional[str] = Field(alias="CompletedDate")
-    completed_uid: Optional[str] = Field(alias="CompletedUid")
-    completed_full_name: Optional[str] = Field(alias="CompletedFullName")
-    reviewer_uid: Optional[str] = Field(alias="ReviewerUid")
-    reviewer_full_name: Optional[str] = Field(alias="ReviewerFullName")
-    reviewer_email: Optional[str] = Field(alias="ReviewerEmail")
-    reviewing_group_id: Optional[int] = Field(alias="ReviewingGroupID")
-    reviewing_group_name: Optional[str] = Field(alias="ReviewingGroupName")
-    time_budget: Optional[float] = Field(alias="TimeBudget")
-    expenses_budget: Optional[float] = Field(alias="ExpensesBudget")
-    time_budget_used: Optional[float] = Field(alias="TimeBudgetUsed")
-    expenses_budget_used: Optional[float] = Field(alias="ExpensesBudgetUsed")
-    is_converted_to_task: Optional[bool] = Field(alias="IsConvertedToTask")
-    converted_to_task_date: Optional[str] = Field(alias="ConvertedToTaskDate")
-    converted_to_task_uid: Optional[str] = Field(alias="ConvertedToTaskUid")
-    converted_to_task_full_name: Optional[str] = Field(alias="ConvertedToTaskFullName")
-    task_project_id: Optional[int] = Field(alias="TaskProjectID")
-    task_project_name: Optional[str] = Field(alias="TaskProjectName")
-    task_plan_id: Optional[int] = Field(alias="TaskPlanID")
-    task_plan_name: Optional[str] = Field(alias="TaskPlanName")
-    task_id: Optional[int] = Field(alias="TaskID")
-    task_title: Optional[str] = Field(alias="TaskTitle")
-    task_start_date: Optional[str] = Field(alias="TaskStartDate")
-    task_end_date: Optional[str] = Field(alias="TaskEndDate")
-    task_percent_complete: Optional[int] = Field(alias="TaskPercentComplete")
-    location_id: Optional[int] = Field(alias="LocationID")
-    location_name: Optional[str] = Field(alias="LocationName")
-    location_room_id: Optional[int] = Field(alias="LocationRoomID")
-    location_room_name: Optional[str] = Field(alias="LocationRoomName")
-    ref_code: Optional[str] = Field(alias="RefCode")
-    service_id: Optional[int] = Field(alias="ServiceID")
-    service_name: Optional[str] = Field(alias="ServiceName")
-    service_offering_id: Optional[int] = Field(alias="ServiceOfferingID")
-    service_offering_name: Optional[str] = Field(alias="ServiceOfferingName")
-    service_category_id: Optional[int] = Field(alias="ServiceCategoryID")
-    service_category_name: Optional[str] = Field(alias="ServiceCategoryName")
-    article_id: Optional[int] = Field(alias="ArticleID")
-    article_subject: Optional[str] = Field(alias="ArticleSubject")
-    article_status: Optional[int] = Field(alias="ArticleStatus")
-    article_category_path_names: Optional[str] = Field(alias="ArticleCategoryPathNames")
-    article_app_id: Optional[int] = Field(alias="ArticleAppID")
-    article_shortcut_id: Optional[int] = Field(alias="ArticleShortcutID")
-    app_id: Optional[int] = Field(alias="AppID")
-    attributes: Optional[List[Attribute]] = Field(alias="Attributes")
-    attachments: Optional[List[dict]] = Field(alias="Attachments")
-    tasks: Optional[List[dict]] = Field(alias="Tasks")
-    notify: Optional[List[NotifyItem]] = Field(alias="Notify")
-    workflow_id: Optional[int] = Field(alias="WorkflowID")
-    workflow_configuration_id: Optional[int] = Field(alias="WorkflowConfigurationID")
-    workflow_name: Optional[str] = Field(alias="WorkflowName")
+class Ticket(BaseClass):
+    def __init__(
+        self,
+        ID: Optional[int] = None,
+        ParentID: Optional[int] = None,
+        ParentTitle: Optional[str] = None,
+        ParentClass: Optional[int] = None,
+        TypeID: Optional[int] = None,
+        TypeName: Optional[str] = None,
+        TypeCategoryID: Optional[int] = None,
+        TypeCategoryName: Optional[str] = None,
+        Classification: Optional[int] = None,
+        ClassificationName: Optional[str] = None,
+        FormID: Optional[int] = None,
+        FormName: Optional[str] = None,
+        Title: Optional[str] = None,
+        Description: Optional[str] = None,
+        IsRichHtml: Optional[bool] = None,
+        Uri: Optional[str] = None,
+        AccountID: Optional[int] = None,
+        AccountName: Optional[str] = None,
+        SourceID: Optional[int] = None,
+        SourceName: Optional[str] = None,
+        StatusID: Optional[int] = None,
+        StatusName: Optional[str] = None,
+        StatusClass: Optional[int] = None,
+        ImpactID: Optional[int] = None,
+        ImpactName: Optional[str] = None,
+        UrgencyID: Optional[int] = None,
+        UrgencyName: Optional[str] = None,
+        PriorityID: Optional[int] = None,
+        PriorityName: Optional[str] = None,
+        PriorityOrder: Optional[float] = None,
+        SlaID: Optional[int] = None,
+        SlaName: Optional[str] = None,
+        IsSlaViolated: Optional[bool] = None,
+        IsSlaRespondByViolated: Optional[bool] = None,
+        IsSlaResolveByViolated: Optional[bool] = None,
+        RespondByDate: Optional[str] = None,
+        ResolveByDate: Optional[str] = None,
+        SlaBeginDate: Optional[str] = None,
+        IsOnHold: Optional[bool] = None,
+        PlacedOnHoldDate: Optional[str] = None,
+        GoesOffHoldDate: Optional[str] = None,
+        CreatedDate: Optional[str] = None,
+        CreatedUid: Optional[str] = None,
+        CreatedFullName: Optional[str] = None,
+        CreatedEmail: Optional[str] = None,
+        ModifiedDate: Optional[str] = None,
+        ModifiedUid: Optional[str] = None,
+        ModifiedFullName: Optional[str] = None,
+        RequestorName: Optional[str] = None,
+        RequestorFirstName: Optional[str] = None,
+        RequestorLastName: Optional[str] = None,
+        RequestorEmail: Optional[str] = None,
+        RequestorPhone: Optional[str] = None,
+        RequestorUid: Optional[str] = None,
+        ActualMinutes: Optional[int] = None,
+        EstimatedMinutes: Optional[int] = None,
+        DaysOld: Optional[int] = None,
+        StartDate: Optional[str] = None,
+        EndDate: Optional[str] = None,
+        ResponsibleUid: Optional[str] = None,
+        ResponsibleFullName: Optional[str] = None,
+        ResponsibleEmail: Optional[str] = None,
+        ResponsibleGroupID: Optional[int] = None,
+        ResponsibleGroupName: Optional[str] = None,
+        RespondedDate: Optional[str] = None,
+        RespondedUid: Optional[str] = None,
+        RespondedFullName: Optional[str] = None,
+        CompletedDate: Optional[str] = None,
+        CompletedUid: Optional[str] = None,
+        CompletedFullName: Optional[str] = None,
+        ReviewerUid: Optional[str] = None,
+        ReviewerFullName: Optional[str] = None,
+        ReviewerEmail: Optional[str] = None,
+        ReviewingGroupID: Optional[int] = None,
+        ReviewingGroupName: Optional[str] = None,
+        TimeBudget: Optional[float] = None,
+        ExpensesBudget: Optional[float] = None,
+        TimeBudgetUsed: Optional[float] = None,
+        ExpensesBudgetUsed: Optional[float] = None,
+        IsConvertedToTask: Optional[bool] = None,
+        ConvertedToTaskDate: Optional[str] = None,
+        ConvertedToTaskUid: Optional[str] = None,
+        ConvertedToTaskFullName: Optional[str] = None,
+        TaskProjectID: Optional[int] = None,
+        TaskProjectName: Optional[str] = None,
+        TaskPlanID: Optional[int] = None,
+        TaskPlanName: Optional[str] = None,
+        TaskID: Optional[int] = None,
+        TaskTitle: Optional[str] = None,
+        TaskStartDate: Optional[str] = None,
+        TaskEndDate: Optional[str] = None,
+        TaskPercentComplete: Optional[int] = None,
+        LocationID: Optional[int] = None,
+        LocationName: Optional[str] = None,
+        LocationRoomID: Optional[int] = None,
+        LocationRoomName: Optional[str] = None,
+        RefCode: Optional[str] = None,
+        ServiceID: Optional[int] = None,
+        ServiceName: Optional[str] = None,
+        ServiceOfferingID: Optional[int] = None,
+        ServiceOfferingName: Optional[str] = None,
+        ServiceCategoryID: Optional[int] = None,
+        ServiceCategoryName: Optional[str] = None,
+        ArticleID: Optional[int] = None,
+        ArticleSubject: Optional[str] = None,
+        ArticleStatus: Optional[int] = None,
+        ArticleCategoryPathNames: Optional[str] = None,
+        ArticleAppID: Optional[int] = None,
+        ArticleShortcutID: Optional[str] = None,
+        AppID: Optional[int] = None,
+        Attributes: Optional[List[AttributeItem]] = None,
+        Attachments: Optional[List[dict]] = None,
+        Tasks: Optional[List[dict]] = None,
+        Notify: Optional[List[NotifyItem]] = None,
+        WorkflowID: Optional[int] = None,
+        WorkflowConfigurationID: Optional[int] = None,
+        WorkflowName: Optional[str] = None,
+    ):
+        self.ID = ID
+        self.ParentID = ParentID
+        self.ParentTitle = ParentTitle
+        self.ParentClass = ParentClass
+        self.TypeID = TypeID
+        self.TypeName = TypeName
+        self.TypeCategoryID = TypeCategoryID
+        self.TypeCategoryName = TypeCategoryName
+        self.Classification = Classification
+        self.ClassificationName = ClassificationName
+        self.FormID = FormID
+        self.FormName = FormName
+        self.Title = Title
+        self.Description = Description
+        self.IsRichHtml = IsRichHtml
+        self.Uri = Uri
+        self.AccountID = AccountID
+        self.AccountName = AccountName
+        self.SourceID = SourceID
+        self.SourceName = SourceName
+        self.StatusID = StatusID
+        self.StatusName = StatusName
+        self.StatusClass = StatusClass
+        self.ImpactID = ImpactID
+        self.ImpactName = ImpactName
+        self.UrgencyID = UrgencyID
+        self.UrgencyName = UrgencyName
+        self.PriorityID = PriorityID
+        self.PriorityName = PriorityName
+        self.PriorityOrder = PriorityOrder
+        self.SlaID = SlaID
+        self.SlaName = SlaName
+        self.IsSlaViolated = IsSlaViolated
+        self.IsSlaRespondByViolated = IsSlaRespondByViolated
+        self.IsSlaResolveByViolated = IsSlaResolveByViolated
+        self.RespondByDate = RespondByDate
+        self.ResolveByDate = ResolveByDate
+        self.SlaBeginDate = SlaBeginDate
+        self.IsOnHold = IsOnHold
+        self.PlacedOnHoldDate = PlacedOnHoldDate
+        self.GoesOffHoldDate = GoesOffHoldDate
+        self.CreatedDate = CreatedDate
+        self.CreatedUid = CreatedUid
+        self.CreatedFullName = CreatedFullName
+        self.CreatedEmail = CreatedEmail
+        self.ModifiedDate = ModifiedDate
+        self.ModifiedUid = ModifiedUid
+        self.ModifiedFullName = ModifiedFullName
+        self.RequestorName = RequestorName
+        self.RequestorFirstName = RequestorFirstName
+        self.RequestorLastName = RequestorLastName
+        self.RequestorEmail = RequestorEmail
+        self.RequestorPhone = RequestorPhone
+        self.RequestorUid = RequestorUid
+        self.ActualMinutes = ActualMinutes
+        self.EstimatedMinutes = EstimatedMinutes
+        self.DaysOld = DaysOld
+        self.StartDate = StartDate
+        self.EndDate = EndDate
+        self.ResponsibleUid = ResponsibleUid
+        self.ResponsibleFullName = ResponsibleFullName
+        self.ResponsibleEmail = ResponsibleEmail
+        self.ResponsibleGroupID = ResponsibleGroupID
+        self.ResponsibleGroupName = ResponsibleGroupName
+        self.RespondedDate = RespondedDate
+        self.RespondedUid = RespondedUid
+        self.RespondedFullName = RespondedFullName
+        self.CompletedDate = CompletedDate
+        self.CompletedUid = CompletedUid
+        self.CompletedFullName = CompletedFullName
+        self.ReviewerUid = ReviewerUid
+        self.ReviewerFullName = ReviewerFullName
+        self.ReviewerEmail = ReviewerEmail
+        self.ReviewingGroupID = ReviewingGroupID
+        self.ReviewingGroupName = ReviewingGroupName
+        self.TimeBudget = TimeBudget
+        self.ExpensesBudget = ExpensesBudget
+        self.TimeBudgetUsed = TimeBudgetUsed
+        self.ExpensesBudgetUsed = ExpensesBudgetUsed
+        self.IsConvertedToTask = IsConvertedToTask
+        self.ConvertedToTaskDate = ConvertedToTaskDate
+        self.ConvertedToTaskUid = ConvertedToTaskUid
+        self.ConvertedToTaskFullName = ConvertedToTaskFullName
+        self.TaskProjectID = TaskProjectID
+        self.TaskProjectName = TaskProjectName
+        self.TaskPlanID = TaskPlanID
+        self.TaskPlanName = TaskPlanName
+        self.TaskID = TaskID
+        self.TaskTitle = TaskTitle
+        self.TaskStartDate = TaskStartDate
+        self.TaskEndDate = TaskEndDate
+        self.TaskPercentComplete = TaskPercentComplete
+        self.LocationID = LocationID
+        self.LocationName = LocationName
+        self.LocationRoomID = LocationRoomID
+        self.LocationRoomName = LocationRoomName
+        self.RefCode = RefCode
+        self.ServiceID = ServiceID
+        self.ServiceName = ServiceName
+        self.ServiceOfferingID = ServiceOfferingID
+        self.ServiceOfferingName = ServiceOfferingName
+        self.ServiceCategoryID = ServiceCategoryID
+        self.ServiceCategoryName = ServiceCategoryName
+        self.ArticleID = ArticleID
+        self.ArticleSubject = ArticleSubject
+        self.ArticleStatus = ArticleStatus
+        self.ArticleCategoryPathNames = ArticleCategoryPathNames
+        self.ArticleAppID = ArticleAppID
+        self.ArticleShortcutID = ArticleShortcutID
+        self.AppID = AppID
+        self.Attributes = Attributes
+        self.Attachments = Attachments
+        self.Tasks = Tasks
+        self.Notify = Notify
+        self.WorkflowID = WorkflowID
+        self.WorkflowConfigurationID = WorkflowConfigurationID
+        self.WorkflowName = WorkflowName
+
+
+class TicketFeed(BaseClass):
+    def __init__(
+        self,
+        ID: Optional[int] = None,
+        CreatedUid: Optional[str] = None,
+        CreatedRefID: Optional[int] = None,
+        CreatedFullName: Optional[str] = None,
+        CreatedFirstName: Optional[str] = None,
+        CreatedLastName: Optional[str] = None,
+        CreatedByPicPath: Optional[str] = None,
+        CreatedDate: Optional[str] = None,
+        LastUpdatedDate: Optional[str] = None,
+        ProjectID: Optional[int] = None,
+        ProjectName: Optional[str] = None,
+        PlanID: Optional[int] = None,
+        PlanName: Optional[str] = None,
+        ItemType: Optional[int] = None,
+        ItemID: Optional[int] = None,
+        ItemTitle: Optional[str] = None,
+        ReferenceID: Optional[int] = None,
+        Body: Optional[str] = None,
+        IsRichHtml: Optional[bool] = None,
+        UpdateType: Optional[int] = None,
+        NotifiedList: Optional[List] = None,
+        IsPrivate: Optional[bool] = None,
+        IsParent: Optional[bool] = None,
+        Replies: Optional[List] = None,
+        RepliesCount: Optional[int] = None,
+        Likes: Optional[List] = None,
+        ILike: Optional[bool] = None,
+        LikesCount: Optional[int] = None,
+        Participants: Optional[List] = None,
+        BreadcrumbsHtml: Optional[str] = None,
+        HasAttachment: Optional[bool] = None,
+        Uri: Optional[str] = None,
+    ):
+        self.ID = ID
+        self.CreatedUid = CreatedUid
+        self.CreatedRefID = CreatedRefID
+        self.CreatedFullName = CreatedFullName
+        self.CreatedFirstName = CreatedFirstName
+        self.CreatedLastName = CreatedLastName
+        self.CreatedByPicPath = CreatedByPicPath
+        self.CreatedDate = CreatedDate
+        self.LastUpdatedDate = LastUpdatedDate
+        self.ProjectID = ProjectID
+        self.ProjectName = ProjectName
+        self.PlanID = PlanID
+        self.PlanName = PlanName
+        self.ItemType = ItemType
+        self.ItemID = ItemID
+        self.ItemTitle = ItemTitle
+        self.ReferenceID = ReferenceID
+        self.Body = Body
+        self.IsRichHtml = IsRichHtml
+        self.UpdateType = UpdateType
+        self.NotifiedList = NotifiedList
+        self.IsPrivate = IsPrivate
+        self.IsParent = IsParent
+        self.Replies = Replies
+        self.RepliesCount = RepliesCount
+        self.Likes = Likes
+        self.ILike = ILike
+        self.LikesCount = LikesCount
+        self.Participants = Participants
+        self.BreadcrumbsHtml = BreadcrumbsHtml
+        self.HasAttachment = HasAttachment
+        self.Uri = Uri
+
+
+class TicketType(BaseClass):
+    def __init__(
+        self,
+        ID: Optional[int] = None,
+        AppID: Optional[int] = None,
+        AppName: Optional[str] = None,
+        Name: Optional[str] = None,
+        Description: Optional[str] = None,
+        CategoryID: Optional[int] = None,
+        CategoryName: Optional[str] = None,
+        FullName: Optional[str] = None,
+        IsActive: Optional[bool] = None,
+        CreatedDate: Optional[str] = None,
+        CreatedByUid: Optional[str] = None,
+        ModifiedDate: Optional[str] = None,
+        ModifiedByUid: Optional[str] = None,
+        ReviewerUid: Optional[str] = None,
+        ReviewerFullName: Optional[str] = None,
+        ReviewerEmail: Optional[str] = None,
+        ReviewingGroupID: Optional[int] = None,
+        ReviewingGroupName: Optional[str] = None,
+        NotifyReviewer: Optional[bool] = None,
+        OtherNotificationEmailAddresses: Optional[str] = None,
+        DefaultSLAID: Optional[int] = None,
+        DefaultSLAName: Optional[str] = None,
+        DefaultSLAIsActive: Optional[bool] = None,
+        WorkspaceID: Optional[int] = None,
+        WorkspaceName: Optional[str] = None,
+        ShouldAlertResponsibleOnTaskClose: Optional[bool] = None,
+    ):
+        self.ID = ID
+        self.AppID = AppID
+        self.AppName = AppName
+        self.Name = Name
+        self.Description = Description
+        self.CategoryID = CategoryID
+        self.CategoryName = CategoryName
+        self.FullName = FullName
+        self.IsActive = IsActive
+        self.CreatedDate = CreatedDate
+        self.CreatedByUid = CreatedByUid
+        self.ModifiedDate = ModifiedDate
+        self.ModifiedByUid = ModifiedByUid
+        self.ReviewerUid = ReviewerUid
+        self.ReviewerFullName = ReviewerFullName
+        self.ReviewerEmail = ReviewerEmail
+        self.ReviewingGroupID = ReviewingGroupID
+        self.ReviewingGroupName = ReviewingGroupName
+        self.NotifyReviewer = NotifyReviewer
+        self.OtherNotificationEmailAddresses = OtherNotificationEmailAddresses
+        self.DefaultSLAID = DefaultSLAID
+        self.DefaultSLAName = DefaultSLAName
+        self.DefaultSLAIsActive = DefaultSLAIsActive
+        self.WorkspaceID = WorkspaceID
+        self.WorkspaceName = WorkspaceName
+        self.ShouldAlertResponsibleOnTaskClose = ShouldAlertResponsibleOnTaskClose

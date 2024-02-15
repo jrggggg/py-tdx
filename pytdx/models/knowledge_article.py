@@ -1,56 +1,116 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
 
 
-class Attribute(BaseModel):
-    id: Optional[int] = Field(alias="ID")
-    name: Optional[str] = Field(alias="Name")
-    order: Optional[int] = Field(alias="Order")
-    description: Optional[str] = Field(alias="Description")
-    section_id: Optional[int] = Field(alias="SectionID")
-    section_name: Optional[str] = Field(alias="SectionName")
-    field_type: Optional[str] = Field(alias="FieldType")
-    data_type: Optional[str] = Field(alias="DataType")
-    choices: Optional[List[str]] = Field(alias="Choices")
-    is_required: Optional[bool] = Field(alias="IsRequired")
-    is_updatable: Optional[bool] = Field(alias="IsUpdatable")
-    value: Optional[str] = Field(alias="Value")
-    value_text: Optional[str] = Field(alias="ValueText")
-    choices_text: Optional[str] = Field(alias="ChoicesText")
-    associated_item_ids: Optional[List[int]] = Field(alias="AssociatedItemIDs")
+class BaseClass:
+    def to_dict(self):
+        return {key: value for key, value in vars(self).items() if value is not None}
 
 
-class KnowledgeArticleModel(BaseModel):
-    id: Optional[int] = Field(alias="ID")
-    app_id: Optional[int] = Field(alias="AppID")
-    app_name: Optional[str] = Field(alias="AppName")
-    category_id: Optional[int] = Field(alias="CategoryID")
-    category_name: Optional[str] = Field(alias="CategoryName")
-    subject: Optional[str] = Field(alias="Subject")
-    body: Optional[str] = Field(alias="Body")
-    summary: Optional[str] = Field(alias="Summary")
-    status: Optional[int] = Field(alias="Status")
-    attributes: Optional[List[Attribute]] = Field(alias="Attributes")
-    review_date_utc: Optional[str] = Field(alias="ReviewDateUtc")
-    order: Optional[float] = Field(alias="Order")
-    is_published: Optional[bool] = Field(alias="IsPublished")
-    is_public: Optional[bool] = Field(alias="IsPublic")
-    whitelist_groups: Optional[bool] = Field(alias="WhitelistGroups")
-    inherit_permissions: Optional[bool] = Field(alias="InheritPermissions")
-    notify_owner: Optional[bool] = Field(alias="NotifyOwner")
-    revision_id: Optional[int] = Field(alias="RevisionID")
-    revision_number: Optional[int] = Field(alias="RevisionNumber")
-    draft_status: Optional[str] = Field(alias="DraftStatus")
-    created_date: Optional[str] = Field(alias="CreatedDate")
-    created_uid: Optional[str] = Field(alias="CreatedUid")
-    created_full_name: Optional[str] = Field(alias="CreatedFullName")
-    modified_date: Optional[str] = Field(alias="ModifiedDate")
-    modified_uid: Optional[str] = Field(alias="ModifiedUid")
-    modified_full_name: Optional[str] = Field(alias="ModifiedFullName")
-    owner_uid: Optional[str] = Field(alias="OwnerUid")
-    owner_full_name: Optional[str] = Field(alias="OwnerFullName")
-    owning_group_id: Optional[int] = Field(alias="OwningGroupID")
-    owning_group_name: Optional[str] = Field(alias="OwningGroupName")
-    tags: Optional[List[str]] = Field(alias="Tags")
-    attachments: Optional[List[dict]] = Field(alias="Attachments")
-    uri: Optional[str] = Field(alias="Uri")
+class Attribute(BaseClass):
+    def __init__(
+        self,
+        ID=None,
+        Name=None,
+        Order=None,
+        Description=None,
+        SectionID=None,
+        SectionName=None,
+        FieldType=None,
+        DataType=None,
+        Choices=None,
+        IsRequired=None,
+        IsUpdatable=None,
+        Value=None,
+        ValueText=None,
+        ChoicesText=None,
+        AssociatedItemIDs=None,
+    ):
+        self.ID = ID
+        self.Name = Name
+        self.Order = Order
+        self.Description = Description
+        self.SectionID = SectionID
+        self.SectionName = SectionName
+        self.FieldType = FieldType
+        self.DataType = DataType
+        self.Choices = Choices
+        self.IsRequired = IsRequired
+        self.IsUpdatable = IsUpdatable
+        self.Value = Value
+        self.ValueText = ValueText
+        self.ChoicesText = ChoicesText
+        self.AssociatedItemIDs = AssociatedItemIDs
+
+
+class KnowledgeArticle(BaseClass):
+    def __init__(
+        self,
+        ID=None,
+        AppID=None,
+        AppName=None,
+        CategoryID=None,
+        CategoryName=None,
+        Subject=None,
+        Body=None,
+        Summary=None,
+        Status=None,
+        Attributes=None,
+        ReviewDateUtc=None,
+        Order=None,
+        IsPublished=None,
+        IsPublic=None,
+        WhitelistGroups=None,
+        InheritPermissions=None,
+        NotifyOwner=None,
+        RevisionID=None,
+        RevisionNumber=None,
+        DraftStatus=None,
+        CreatedDate=None,
+        CreatedUid=None,
+        CreatedFullName=None,
+        ModifiedDate=None,
+        ModifiedUid=None,
+        ModifiedFullName=None,
+        OwnerUid=None,
+        OwnerFullName=None,
+        OwningGroupID=None,
+        OwningGroupName=None,
+        Tags=None,
+        Attachments=None,
+        Uri=None,
+    ):
+        self.ID = ID
+        self.AppID = AppID
+        self.AppName = AppName
+        self.CategoryID = CategoryID
+        self.CategoryName = CategoryName
+        self.Subject = Subject
+        self.Body = Body
+        self.Summary = Summary
+        self.Status = Status
+        self.Attributes = (
+            [Attribute(**attr) for attr in Attributes] if Attributes else None
+        )
+        self.ReviewDateUtc = ReviewDateUtc
+        self.Order = Order
+        self.IsPublished = IsPublished
+        self.IsPublic = IsPublic
+        self.WhitelistGroups = WhitelistGroups
+        self.InheritPermissions = InheritPermissions
+        self.NotifyOwner = NotifyOwner
+        self.RevisionID = RevisionID
+        self.RevisionNumber = RevisionNumber
+        self.DraftStatus = DraftStatus
+        self.CreatedDate = CreatedDate
+        self.CreatedUid = CreatedUid
+        self.CreatedFullName = CreatedFullName
+        self.ModifiedDate = ModifiedDate
+        self.ModifiedUid = ModifiedUid
+        self.ModifiedFullName = ModifiedFullName
+        self.OwnerUid = OwnerUid
+        self.OwnerFullName = OwnerFullName
+        self.OwningGroupID = OwningGroupID
+        self.OwningGroupName = OwningGroupName
+        self.Tags = Tags
+        self.Attachments = Attachments
+        self.Uri = Uri

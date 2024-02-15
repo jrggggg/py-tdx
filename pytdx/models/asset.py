@@ -1,86 +1,208 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field
+from typing import Optional, List, Dict
 
 
-class AttributeChoice(BaseModel):
-    id: Optional[int] = Field(alias="ID")
-    name: Optional[str] = Field(alias="Name")
-    is_active: Optional[bool] = Field(alias="IsActive")
-    date_created: Optional[str] = Field(alias="DateCreated")
-    date_modified: Optional[str] = Field(alias="DateModified")
-    order: Optional[int] = Field(alias="Order")
+class BaseClass:
+    def to_dict(self):
+        return {key: value for key, value in vars(self).items() if value is not None}
 
 
-class Attribute(BaseModel):
-    id: Optional[int] = Field(alias="ID")
-    name: Optional[str] = Field(alias="Name")
-    order: Optional[int] = Field(alias="Order")
-    description: Optional[str] = Field(alias="Description")
-    section_id: Optional[int] = Field(alias="SectionID")
-    section_name: Optional[str] = Field(alias="SectionName")
-    field_type: Optional[str] = Field(alias="FieldType")
-    data_type: Optional[str] = Field(alias="DataType")
-    choices: Optional[List[AttributeChoice]] = Field(alias="Choices")
-    is_required: Optional[bool] = Field(alias="IsRequired")
-    is_updatable: Optional[bool] = Field(alias="IsUpdatable")
-    value: Optional[str] = Field(alias="Value")
-    value_text: Optional[str] = Field(alias="ValueText")
-    choices_text: Optional[str] = Field(alias="ChoicesText")
-    associated_item_ids: Optional[List[int]] = Field(alias="AssociatedItemIDs")
+class Choice(BaseClass):
+    def __init__(
+        self,
+        ID: Optional[int] = None,
+        Name: Optional[str] = None,
+        IsActive: Optional[bool] = None,
+        DateCreated: Optional[str] = None,
+        DateModified: Optional[str] = None,
+        Order: Optional[int] = None,
+    ):
+        self.ID = ID
+        self.Name = Name
+        self.IsActive = IsActive
+        self.DateCreated = DateCreated
+        self.DateModified = DateModified
+        self.Order = Order
 
 
-class Attachment(BaseModel):
-    pass  # Define attachment fields here if needed
+class Attribute(BaseClass):
+    def __init__(
+        self,
+        ID: Optional[int] = None,
+        Name: Optional[str] = None,
+        Order: Optional[int] = None,
+        Description: Optional[str] = None,
+        SectionID: Optional[int] = None,
+        SectionName: Optional[str] = None,
+        FieldType: Optional[str] = None,
+        DataType: Optional[str] = None,
+        IsRequired: Optional[bool] = None,
+        IsUpdatable: Optional[bool] = None,
+        Value: Optional[str] = None,
+        ValueText: Optional[str] = None,
+        ChoicesText: Optional[str] = None,
+        AssociatedItemIDs: Optional[List[int]] = None,
+        Choices: Optional[List[Choice]] = None,
+    ):
+        self.ID = ID
+        self.Name = Name
+        self.Order = Order
+        self.Description = Description
+        self.SectionID = SectionID
+        self.SectionName = SectionName
+        self.FieldType = FieldType
+        self.DataType = DataType
+        self.IsRequired = IsRequired
+        self.IsUpdatable = IsUpdatable
+        self.Value = Value
+        self.ValueText = ValueText
+        self.ChoicesText = ChoicesText
+        self.AssociatedItemIDs = AssociatedItemIDs
+        self.Choices = Choices
 
 
-class AssetModel(BaseModel):
-    id: Optional[int] = Field(alias="ID")
-    app_id: Optional[int] = Field(alias="AppID")
-    app_name: Optional[str] = Field(alias="AppName")
-    form_id: Optional[int] = Field(alias="FormID")
-    form_name: Optional[str] = Field(alias="FormName")
-    product_model_id: Optional[int] = Field(alias="ProductModelID")
-    product_model_name: Optional[str] = Field(alias="ProductModelName")
-    manufacturer_id: Optional[int] = Field(alias="ManufacturerID")
-    manufacturer_name: Optional[str] = Field(alias="ManufacturerName")
-    supplier_id: Optional[int] = Field(alias="SupplierID")
-    supplier_name: Optional[str] = Field(alias="SupplierName")
-    status_id: Optional[int] = Field(alias="StatusID")
-    status_name: Optional[str] = Field(alias="StatusName")
-    location_id: Optional[int] = Field(alias="LocationID")
-    location_name: Optional[str] = Field(alias="LocationName")
-    location_room_id: Optional[int] = Field(alias="LocationRoomID")
-    location_room_name: Optional[str] = Field(alias="LocationRoomName")
-    tag: Optional[str] = Field(alias="Tag")
-    serial_number: Optional[str] = Field(alias="SerialNumber")
-    name: Optional[str] = Field(alias="Name")
-    purchase_cost: Optional[float] = Field(alias="PurchaseCost")
-    acquisition_date: Optional[str] = Field(alias="AcquisitionDate")
-    expected_replacement_date: Optional[str] = Field(alias="ExpectedReplacementDate")
-    requesting_customer_id: Optional[str] = Field(alias="RequestingCustomerID")
-    requesting_customer_name: Optional[str] = Field(alias="RequestingCustomerName")
-    requesting_department_id: Optional[int] = Field(alias="RequestingDepartmentID")
-    requesting_department_name: Optional[str] = Field(alias="RequestingDepartmentName")
-    owning_customer_id: Optional[str] = Field(alias="OwningCustomerID")
-    owning_customer_name: Optional[str] = Field(alias="OwningCustomerName")
-    owning_department_id: Optional[int] = Field(alias="OwningDepartmentID")
-    owning_department_name: Optional[str] = Field(alias="OwningDepartmentName")
-    parent_id: Optional[int] = Field(alias="ParentID")
-    parent_serial_number: Optional[str] = Field(alias="ParentSerialNumber")
-    parent_name: Optional[str] = Field(alias="ParentName")
-    parent_tag: Optional[str] = Field(alias="ParentTag")
-    maintenance_schedule_id: Optional[int] = Field(alias="MaintenanceScheduleID")
-    maintenance_schedule_name: Optional[str] = Field(alias="MaintenanceScheduleName")
-    configuration_item_id: Optional[int] = Field(alias="ConfigurationItemID")
-    created_date: Optional[str] = Field(alias="CreatedDate")
-    created_uid: Optional[str] = Field(alias="CreatedUid")
-    created_full_name: Optional[str] = Field(alias="CreatedFullName")
-    modified_date: Optional[str] = Field(alias="ModifiedDate")
-    modified_uid: Optional[str] = Field(alias="ModifiedUid")
-    modified_full_name: Optional[str] = Field(alias="ModifiedFullName")
-    external_id: Optional[str] = Field(alias="ExternalID")
-    external_source_id: Optional[int] = Field(alias="ExternalSourceID")
-    external_source_name: Optional[str] = Field(alias="ExternalSourceName")
-    attributes: Optional[List[Attribute]] = Field(alias="Attributes")
-    attachments: Optional[List[Attachment]] = Field(alias="Attachments")
-    uri: Optional[str] = Field(alias="Uri")
+class Asset(BaseClass):
+    def __init__(
+        self,
+        ID: Optional[int] = None,
+        AppID: Optional[int] = None,
+        AppName: Optional[str] = None,
+        FormID: Optional[int] = None,
+        FormName: Optional[str] = None,
+        ProductModelID: Optional[int] = None,
+        ProductModelName: Optional[str] = None,
+        ManufacturerID: Optional[int] = None,
+        ManufacturerName: Optional[str] = None,
+        SupplierID: Optional[int] = None,
+        SupplierName: Optional[str] = None,
+        StatusID: Optional[int] = None,
+        StatusName: Optional[str] = None,
+        LocationID: Optional[int] = None,
+        LocationName: Optional[str] = None,
+        LocationRoomID: Optional[int] = None,
+        LocationRoomName: Optional[str] = None,
+        Tag: Optional[str] = None,
+        SerialNumber: Optional[str] = None,
+        Name: Optional[str] = None,
+        PurchaseCost: Optional[float] = None,
+        AcquisitionDate: Optional[str] = None,
+        ExpectedReplacementDate: Optional[str] = None,
+        RequestingCustomerID: Optional[str] = None,
+        RequestingCustomerName: Optional[str] = None,
+        RequestingDepartmentID: Optional[int] = None,
+        RequestingDepartmentName: Optional[str] = None,
+        OwningCustomerID: Optional[str] = None,
+        OwningCustomerName: Optional[str] = None,
+        OwningDepartmentID: Optional[int] = None,
+        OwningDepartmentName: Optional[str] = None,
+        ParentID: Optional[int] = None,
+        ParentSerialNumber: Optional[str] = None,
+        ParentName: Optional[str] = None,
+        ParentTag: Optional[str] = None,
+        MaintenanceScheduleID: Optional[int] = None,
+        MaintenanceScheduleName: Optional[str] = None,
+        ConfigurationItemID: Optional[int] = None,
+        CreatedDate: Optional[str] = None,
+        CreatedUid: Optional[str] = None,
+        CreatedFullName: Optional[str] = None,
+        ModifiedDate: Optional[str] = None,
+        ModifiedUid: Optional[str] = None,
+        ModifiedFullName: Optional[str] = None,
+        ExternalID: Optional[str] = None,
+        ExternalSourceID: Optional[int] = None,
+        ExternalSourceName: Optional[str] = None,
+        Attributes: Optional[List[Attribute]] = None,
+        Attachments: Optional[List] = None,
+        Uri: Optional[str] = None,
+    ):
+        self.ID = ID
+        self.AppID = AppID
+        self.AppName = AppName
+        self.FormID = FormID
+        self.FormName = FormName
+        self.ProductModelID = ProductModelID
+        self.ProductModelName = ProductModelName
+        self.ManufacturerID = ManufacturerID
+        self.ManufacturerName = ManufacturerName
+        self.SupplierID = SupplierID
+        self.SupplierName = SupplierName
+        self.StatusID = StatusID
+        self.StatusName = StatusName
+        self.LocationID = LocationID
+        self.LocationName = LocationName
+        self.LocationRoomID = LocationRoomID
+        self.LocationRoomName = LocationRoomName
+        self.Tag = Tag
+        self.SerialNumber = SerialNumber
+        self.Name = Name
+        self.PurchaseCost = PurchaseCost
+        self.AcquisitionDate = AcquisitionDate
+        self.ExpectedReplacementDate = ExpectedReplacementDate
+        self.RequestingCustomerID = RequestingCustomerID
+        self.RequestingCustomerName = RequestingCustomerName
+        self.RequestingDepartmentID = RequestingDepartmentID
+        self.RequestingDepartmentName = RequestingDepartmentName
+        self.OwningCustomerID = OwningCustomerID
+        self.OwningCustomerName = OwningCustomerName
+        self.OwningDepartmentID = OwningDepartmentID
+        self.OwningDepartmentName = OwningDepartmentName
+        self.ParentID = ParentID
+        self.ParentSerialNumber = ParentSerialNumber
+        self.ParentName = ParentName
+        self.ParentTag = ParentTag
+        self.MaintenanceScheduleID = MaintenanceScheduleID
+        self.MaintenanceScheduleName = MaintenanceScheduleName
+        self.ConfigurationItemID = ConfigurationItemID
+        self.CreatedDate = CreatedDate
+        self.CreatedUid = CreatedUid
+        self.CreatedFullName = CreatedFullName
+        self.ModifiedDate = ModifiedDate
+        self.ModifiedUid = ModifiedUid
+        self.ModifiedFullName = ModifiedFullName
+        self.ExternalID = ExternalID
+        self.ExternalSourceID = ExternalSourceID
+        self.ExternalSourceName = ExternalSourceName
+        self.Attributes = Attributes
+        self.Attachments = Attachments
+        self.Uri = Uri
+
+
+class AssetModel(BaseClass):
+    def __init__(
+        self,
+        ID: Optional[int] = None,
+        AppID: Optional[int] = None,
+        AppName: Optional[str] = None,
+        Name: Optional[str] = None,
+        Description: Optional[str] = None,
+        IsActive: Optional[bool] = None,
+        ManufacturerID: Optional[int] = None,
+        ManufacturerName: Optional[str] = None,
+        ProductTypeID: Optional[int] = None,
+        ProductTypeName: Optional[str] = None,
+        PartNumber: Optional[str] = None,
+        Attributes: Optional[list] = None,
+        CreatedDate: Optional[str] = None,
+        CreatedUid: Optional[str] = None,
+        CreatedFullName: Optional[str] = None,
+        ModifiedDate: Optional[str] = None,
+        ModifiedUid: Optional[str] = None,
+        ModifiedFullName: Optional[str] = None,
+    ):
+        self.ID = ID
+        self.AppID = AppID
+        self.AppName = AppName
+        self.Name = Name
+        self.Description = Description
+        self.IsActive = IsActive
+        self.ManufacturerID = ManufacturerID
+        self.ManufacturerName = ManufacturerName
+        self.ProductTypeID = ProductTypeID
+        self.ProductTypeName = ProductTypeName
+        self.PartNumber = PartNumber
+        self.Attributes = Attributes
+        self.CreatedDate = CreatedDate
+        self.CreatedUid = CreatedUid
+        self.CreatedFullName = CreatedFullName
+        self.ModifiedDate = ModifiedDate
+        self.ModifiedUid = ModifiedUid
+        self.ModifiedFullName = ModifiedFullName
