@@ -282,7 +282,7 @@ class Tdx:
 
     def update_attribute_choice(
         self, attribute_id: int, choice_id: int, data: AttributeChoice
-    ):
+    ) -> AttributeChoice:
         """
         Update an attribute choice
 
@@ -373,7 +373,7 @@ class Tdx:
         response = self.__request("GET", url=url)
         return AssetModel(**response)
 
-    def create_asset_model(self, asset_model, manufacturer, product_type):
+    def create_asset_model(self, asset_model, manufacturer, product_type) -> AssetModel:
         """
         Create an asset model if it doesn't already exist.
 
