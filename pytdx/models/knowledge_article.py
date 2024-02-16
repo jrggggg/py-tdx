@@ -1,7 +1,8 @@
 from typing import Optional, List
+from base_model import BaseModel
 
 
-class Attribute:
+class Attribute(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,
@@ -37,7 +38,7 @@ class Attribute:
         self.AssociatedItemIDs = AssociatedItemIDs
 
 
-class KnowledgeArticle:
+class KnowledgeArticle(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,

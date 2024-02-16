@@ -1,12 +1,8 @@
 from typing import Optional, List, Dict
+from base_model import BaseModel
 
 
-class BaseClass:
-    def to_dict(self):
-        return {key: value for key, value in vars(self).items() if value is not None}
-
-
-class Choice(BaseClass):
+class Choice(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,
@@ -24,7 +20,7 @@ class Choice(BaseClass):
         self.Order = Order
 
 
-class Attribute(BaseClass):
+class Attribute(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,
@@ -60,7 +56,7 @@ class Attribute(BaseClass):
         self.Choices = Choices
 
 
-class Asset(BaseClass):
+class Asset(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,
@@ -166,7 +162,7 @@ class Asset(BaseClass):
         self.Uri = Uri
 
 
-class AssetModel(BaseClass):
+class AssetModel(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,

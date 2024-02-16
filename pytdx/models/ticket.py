@@ -1,12 +1,8 @@
 from typing import Optional, List
+from base_model import BaseModel
 
 
-class BaseClass:
-    def to_dict(self):
-        return {key: value for key, value in vars(self).items() if value is not None}
-
-
-class NotifyItem(BaseClass):
+class NotifyItem(BaseModel):
     def __init__(
         self,
         ItemRole: Optional[str] = None,
@@ -24,7 +20,7 @@ class NotifyItem(BaseClass):
         self.ProfileImageFileName = ProfileImageFileName
 
 
-class AttributeItem(BaseClass):
+class AttributeItem(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,
@@ -60,7 +56,7 @@ class AttributeItem(BaseClass):
         self.AssociatedItemIDs = AssociatedItemIDs
 
 
-class Ticket(BaseClass):
+class Ticket(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,
@@ -300,7 +296,7 @@ class Ticket(BaseClass):
         self.WorkflowName = WorkflowName
 
 
-class TicketFeed(BaseClass):
+class TicketFeed(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,
@@ -370,7 +366,7 @@ class TicketFeed(BaseClass):
         self.Uri = Uri
 
 
-class TicketType(BaseClass):
+class TicketType(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,

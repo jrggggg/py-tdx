@@ -1,12 +1,8 @@
 from typing import Optional, List
+from base_model import BaseModel
 
 
-class BaseClass:
-    def to_dict(self):
-        return {key: value for key, value in vars(self).items() if value is not None}
-
-
-class AttributeChoice(BaseClass):
+class AttributeChoice(BaseModel):
     def __init__(
         self,
         ID: Optional[int] = None,
