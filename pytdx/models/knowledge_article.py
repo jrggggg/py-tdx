@@ -1,29 +1,24 @@
-from typing import List, Optional
+from typing import Optional, List
 
 
-class BaseClass:
-    def to_dict(self):
-        return {key: value for key, value in vars(self).items() if value is not None}
-
-
-class Attribute(BaseClass):
+class Attribute:
     def __init__(
         self,
-        ID=None,
-        Name=None,
-        Order=None,
-        Description=None,
-        SectionID=None,
-        SectionName=None,
-        FieldType=None,
-        DataType=None,
-        Choices=None,
-        IsRequired=None,
-        IsUpdatable=None,
-        Value=None,
-        ValueText=None,
-        ChoicesText=None,
-        AssociatedItemIDs=None,
+        ID: Optional[int] = None,
+        Name: Optional[str] = None,
+        Order: Optional[int] = None,
+        Description: Optional[str] = None,
+        SectionID: Optional[int] = None,
+        SectionName: Optional[str] = None,
+        FieldType: Optional[str] = None,
+        DataType: Optional[str] = None,
+        Choices: Optional[List[str]] = None,
+        IsRequired: Optional[bool] = None,
+        IsUpdatable: Optional[bool] = None,
+        Value: Optional[str] = None,
+        ValueText: Optional[str] = None,
+        ChoicesText: Optional[str] = None,
+        AssociatedItemIDs: Optional[List[int]] = None,
     ):
         self.ID = ID
         self.Name = Name
@@ -42,42 +37,42 @@ class Attribute(BaseClass):
         self.AssociatedItemIDs = AssociatedItemIDs
 
 
-class KnowledgeArticle(BaseClass):
+class KnowledgeArticle:
     def __init__(
         self,
-        ID=None,
-        AppID=None,
-        AppName=None,
-        CategoryID=None,
-        CategoryName=None,
-        Subject=None,
-        Body=None,
-        Summary=None,
-        Status=None,
-        Attributes=None,
-        ReviewDateUtc=None,
-        Order=None,
-        IsPublished=None,
-        IsPublic=None,
-        WhitelistGroups=None,
-        InheritPermissions=None,
-        NotifyOwner=None,
-        RevisionID=None,
-        RevisionNumber=None,
-        DraftStatus=None,
-        CreatedDate=None,
-        CreatedUid=None,
-        CreatedFullName=None,
-        ModifiedDate=None,
-        ModifiedUid=None,
-        ModifiedFullName=None,
-        OwnerUid=None,
-        OwnerFullName=None,
-        OwningGroupID=None,
-        OwningGroupName=None,
-        Tags=None,
-        Attachments=None,
-        Uri=None,
+        ID: Optional[int] = None,
+        AppID: Optional[int] = None,
+        AppName: Optional[str] = None,
+        CategoryID: Optional[int] = None,
+        CategoryName: Optional[str] = None,
+        Subject: Optional[str] = None,
+        Body: Optional[str] = None,
+        Summary: Optional[str] = None,
+        Status: Optional[int] = None,
+        Attributes: Optional[List[Attribute]] = None,
+        ReviewDateUtc: Optional[str] = None,
+        Order: Optional[float] = None,
+        IsPublished: Optional[bool] = None,
+        IsPublic: Optional[bool] = None,
+        WhitelistGroups: Optional[bool] = None,
+        InheritPermissions: Optional[bool] = None,
+        NotifyOwner: Optional[bool] = None,
+        RevisionID: Optional[int] = None,
+        RevisionNumber: Optional[int] = None,
+        DraftStatus: Optional[str] = None,
+        CreatedDate: Optional[str] = None,
+        CreatedUid: Optional[str] = None,
+        CreatedFullName: Optional[str] = None,
+        ModifiedDate: Optional[str] = None,
+        ModifiedUid: Optional[str] = None,
+        ModifiedFullName: Optional[str] = None,
+        OwnerUid: Optional[str] = None,
+        OwnerFullName: Optional[str] = None,
+        OwningGroupID: Optional[int] = None,
+        OwningGroupName: Optional[str] = None,
+        Tags: Optional[List[str]] = None,
+        Attachments: Optional[List[str]] = None,
+        Uri: Optional[str] = None,
     ):
         self.ID = ID
         self.AppID = AppID
@@ -88,9 +83,7 @@ class KnowledgeArticle(BaseClass):
         self.Body = Body
         self.Summary = Summary
         self.Status = Status
-        self.Attributes = (
-            [Attribute(**attr) for attr in Attributes] if Attributes else None
-        )
+        self.Attributes = Attributes
         self.ReviewDateUtc = ReviewDateUtc
         self.Order = Order
         self.IsPublished = IsPublished
