@@ -81,6 +81,8 @@ class Tdx:
             "Content-Type": "application/json",
         }
 
+        self.valid_custom_classes = self.__valid_custom_classes()
+
     def __authenticate(self):
         """
         Some TDX endpoints require administrative privileges.
@@ -106,6 +108,18 @@ class Tdx:
         self.token = response.text
 
         return self.token
+
+    def __valid_custom_classes(self):
+        # Valid classes sent to PUT, PATCH or POST payload
+        return (
+            Ticket,
+            TicketFeed,
+            TicketType,
+            AttributeChoice,
+            Asset,
+            AssetModel,
+            KnowledgeArticle,
+        )
 
     def __to_patch_payload(
         self, data_dict: dict, op: str = "replace"
@@ -134,10 +148,10 @@ class Tdx:
         elif isinstance(data, dict):
             json_data = json.dumps(data)
         # if a class is being passed and the method is NOT PATCH, change it to dict, then json
-        elif inspect.isclass(data) and method != "PATCH":
+        elif isinstance(data, self.valid_custom_classes) and method != "PATCH":
             json_data = json.dumps(data.to_dict())
         # if a class is being passed and it is PATCH then, prep that data as a patch object
-        elif inspect.isclass(data) and method == "PATCH":
+        elif isinstance(data, self.valid_custom_classes) and method == "PATCH":
             data_dict = data.to_dict()
             patch_data = self.__to_patch_payload(data_dict=data_dict)
             json_data = json.dumps(patch_data)
