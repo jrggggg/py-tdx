@@ -1,11 +1,14 @@
 from pytdx.tdx import Tdx
+from pytdx.models.ticket import Ticket
+
+# from pytdx.models.ticket import TicketModel
 import os
 from dotenv import load_dotenv
 import json
 
 load_dotenv()
 
-conn_info = json.loads(os.getenv("TDX_CONN"))
+conn_info = json.loads(os.getenv("TDX_SB_CONN"))
 
 
 tdx_client = Tdx(
@@ -20,4 +23,9 @@ tdx_client = Tdx(
 )
 
 
-tdx_client.add_asset_to_ticket(ticket_id=20896274, asset_id=1145451)
+# ticket = tdx_client.get_ticket(id=20896004)
+
+update_ticket = Ticket(Title="New Methods 2 - Test")
+
+request = tdx_client.update_ticket(data=update_ticket)
+print(request.ID)

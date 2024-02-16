@@ -1,8 +1,14 @@
 import requests
 import json
+import inspect
 from urllib.parse import urlencode
 from requests.adapters import HTTPAdapter, Retry
 import logging
+from typing import List, Any
+from .models.ticket import Ticket, TicketFeed, TicketType
+from .models.attribute import AttributeChoice
+from .models.asset import Asset, AssetModel
+from .models.knowledge_article import KnowledgeArticle
 
 
 class Tdx:
@@ -55,8 +61,18 @@ class Tdx:
         )
         self.session.mount("https://", HTTPAdapter(max_retries=retries))
 
-        # Define url
+        # Define urls
         self.tdx_api_base_url = f"https://{self.hostname}/{api_path}"
+        if self.ticketing_app_id:
+            self.tickets_url = (
+                f"{self.tdx_api_base_url}/api/{self.ticketing_app_id}/tickets"
+            )
+        if self.asset_app_id:
+            self.assets_url = f"{self.tdx_api_base_url}/api/{self.asset_app_id}/assets"
+        if self.client_portal_app_id:
+            self.kb_url = (
+                f"{self.tdx_api_base_url}/api/{self.client_portal_app_id}/knowledgebase"
+            )
 
         self.bearer_token = self.__authenticate()
 
@@ -91,9 +107,19 @@ class Tdx:
 
         return self.token
 
-    def request(
-        self, method: str, url: str, data: dict | bool = False
-    ) -> list[dict] | dict | int | str:
+    def __to_patch_payload(
+        self, data_dict: dict, op: str = "replace"
+    ) -> List[dict[str, Any]]:
+        """
+        Convert the JSON representation of the model into a PATCH payload format with parameterized op and path
+        """
+        payload = []
+        for attr_name, attr_value in data_dict.items():
+            if attr_value is not None:
+                payload.append({"op": op, "path": f"/{attr_name}", "value": attr_value})
+        return payload
+
+    def __request(self, method: str, url: str, data=False):
         """
         Base method for TDX API Requests
         """
@@ -101,37 +127,58 @@ class Tdx:
         if method not in methods:
             raise ValueError("Method must be one of GET, PUT, PATCH, POST, or DELETE")
 
-        if data:
-            data = json.dumps(data)
+        # Parse data
+        if not data:
+            pass
+        # If data is a arbitrary dict, just json.dump it
+        elif isinstance(data, dict):
+            json_data = json.dumps(data)
+        # if a class is being passed and the method is NOT PATCH, change it to dict, then json
+        elif inspect.isclass(data) and method != "PATCH":
+            json_data = json.dumps(data.to_dict())
+        # if a class is being passed and it is PATCH then, prep that data as a patch object
+        elif inspect.isclass(data) and method == "PATCH":
+            data_dict = data.to_dict()
+            patch_data = self.__to_patch_payload(data_dict=data_dict)
+            json_data = json.dumps(patch_data)
+        else:
+            raise Exception(
+                "Unable to determine what to do with the data provided. Check its type."
+            )
 
         try:
             match method:
                 case "GET":
                     response = self.session.get(url, headers=self.default_header)
                 case "PUT":
+                    logging.info(json_data)
                     response = self.session.put(
-                        url, headers=self.default_header, data=data
+                        url, headers=self.default_header, data=json_data
                     )
                 case "PATCH":
+                    logging.info(patch_data)
                     response = self.session.patch(
-                        url, headers=self.default_header, data=data
+                        url, headers=self.default_header, data=json_data
                     )
                 case "POST":
+                    logging.info(json_data)
                     response = self.session.post(
-                        url, headers=self.default_header, data=data
+                        url, headers=self.default_header, data=json_data
                     )
                 case "DELETE":
                     response = self.session.delete(url, headers=self.default_header)
             response.raise_for_status()
 
-        except requests.exceptions.HTTPError as errh:
-            raise Exception("Http Error: " + str(errh))
-        except requests.exceptions.ConnectionError as errc:
-            raise Exception("Error Connecting: " + str(errc))
-        except requests.exceptions.Timeout as errt:
-            raise Exception("Timeout Error: " + str(errt))
-        except requests.exceptions.RequestException as err:
-            raise Exception("Error: " + str(err))
+        except requests.exceptions.HTTPError as err:
+            raise Exception(
+                "Http Error: " + str(err), "Response content:", err.response.text
+            )
+        # except requests.exceptions.ConnectionError as errc:
+        #    raise Exception("Error Connecting: " + str(errc),"Response content:", err.response.text)
+        # except requests.exceptions.Timeout as errt:
+        #    raise Exception("Timeout Error: " + str(errt))
+        # except requests.exceptions.RequestException as err:
+        #    raise Exception("Error: " + str(err))
 
         try:
             content_length = int(response.headers.get("Content-Length", 0))
@@ -151,62 +198,65 @@ class Tdx:
     #
     # TICKETS
     #
-    def get_ticket(self, ticket_id: int):
-        url = (
-            self.tdx_api_base_url + f"/api/{self.ticketing_app_id}/tickets/{ticket_id}"
-        )
-        return self.request("GET", url=url)
+    def get_ticket(self, id: int) -> Ticket:
+        url = f"{self.tickets_url}/{id}"
+        response = self.__request("GET", url=url)
+        return Ticket(**response)
 
-    def create_ticket_feed_entry(
+    def update_ticket(self, id: int, data: Ticket) -> Ticket:
+        url = f"{self.tickets_url}/{id}"
+        response = self.__request("PATCH", url=url, data=data)
+        return Ticket(**response)
+
+    def create_ticket(
         self,
-        ticket_id: int,
-        comments: str,
-        is_rich_html: bool = True,
-        is_private: bool = True,
-        notify: list | bool = False,
-    ):
-        url = (
-            self.tdx_api_base_url
-            + f"/api/{self.ticketing_app_id}/tickets/{ticket_id}/feed"
-        )
-
-        payload = {
-            "NewStatusID": None,
-            "Comments": comments,
-            "IsPrivate": is_private,
-            "IsRichHtml": is_rich_html,
+        data: Ticket,
+        notify_responsible: bool = False,
+        notify_requestor: bool = False,
+    ) -> Ticket:
+        params = {
+            "NotifyRequestor": notify_requestor,
+            "NotifyResponsible": notify_responsible,
         }
+        encoded_params = urlencode(params)
 
-        if notify:
-            payload["Notify"] = notify
-
-        return self.request("POST", url=url, data=payload)
+        url = f"{self.tickets_url}?{encoded_params}"
+        response = self.__request("POST", url=url, data=data)
+        return Ticket(**response)
 
     def add_asset_to_ticket(self, ticket_id: int, asset_id: int):
-        url = (
-            self.tdx_api_base_url
-            + f"/api/{self.ticketing_app_id}/tickets/{ticket_id}/assets/{asset_id}"
-        )
-        return self.request("POST", url=url)
+        url = f"{self.tickets_url}/{ticket_id}/assets/{asset_id}"
+        return self.__request("POST", url=url)
+
+    def get_ticket_feed(self, id: int) -> List[TicketFeed]:
+        url = f"{self.tickets_url}/{id}/feed"
+        response = self.__request("GET", url=url)
+        return [TicketFeed(**item) for item in response]
+
+    def create_ticket_feed_entry(self, id: int, data: TicketFeed) -> TicketFeed:
+        url = f"{self.tickets_url}/{self.id}/feed"
+        response = self.__request("POST", url=url, data=data)
+        return TicketFeed(**response)
 
     #
     # TICKET TYPES
     #
-    def get_types(self, is_active: bool = True):
+    def get_types(self, is_active: bool = True) -> List[TicketType]:
         """
         Get ticket types
         """
         params = {"IsActive": is_active}
         encoded_params = urlencode(params)
 
-        url = (
-            self.tdx_api_base_url
-            + f"/api/{self.ticketing_app_id}/tickets/types?{encoded_params}"
-        )
+        url = f"{self.tickets_url}/types?{encoded_params}"
+        response = self.__request("GET", url=url)
+        return [TicketType(**item) for item in response]
 
-        return self.request("GET", url=url)
+    #
+    # ATTRIBUTES
+    #
 
-    def get_attribute_choices(self, attribute_id: int):
+    def get_attribute_choices(self, attribute_id: int) -> List[AttributeChoice]:
         """
         Get attribute choices
 
@@ -214,11 +264,12 @@ class Tdx:
         """
 
         url = self.tdx_api_base_url + f"/api/attributes/{attribute_id}/choices"
-        return self.request("GET", url=url)
+        response = self.__request("GET", url=url)
+        return [AttributeChoice(**item) for item in response]
 
     def create_attribute_choice(
         self, attribute_id: int, choice_name: str, is_active: bool = True
-    ):
+    ) -> AttributeChoice:
         """
         Create attribute choices
         """
@@ -226,23 +277,22 @@ class Tdx:
         url = self.tdx_api_base_url + f"/api/attributes/{attribute_id}/choices"
 
         payload = {"Name": choice_name, "IsActive": is_active}
-        return self.request("POST", url=url, data=payload)
+        response = self.__request("POST", url=url, data=payload)
+        return AttributeChoice(**response)
 
     def update_attribute_choice(
-        self, attribute_id: int, choice_id: int, put_pyload: dict
-    ):
+        self, attribute_id: int, choice_id: int, data: AttributeChoice
+    ) -> AttributeChoice:
         """
         Update an attribute choice
-        {
-            "IsActive": False
-        }
 
         """
         url = (
             self.tdx_api_base_url
             + f"/api/attributes/{attribute_id}/choices/{choice_id}"
         )
-        return self.request("PUT", url=url, data=put_pyload)
+        response = self.__request("PUT", url=url, data=data)
+        return AttributeChoice(**response)
 
     #
     # ASSET
@@ -250,53 +300,47 @@ class Tdx:
     def get_asset(
         self,
         asset_id: int,
-    ) -> dict:
+    ) -> Asset:
         """
         Get a single TDX Asset
         """
-        url = self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/{asset_id}"
-        return self.request(method="GET", url=url)
+        url = f"{self.assets_url}/{asset_id}"
+        response = self.__request(method="GET", url=url)
+        return Asset(**response)
 
     def get_assets(
         self,
         search_payload: dict,
-    ) -> list[dict]:
+    ) -> List[Asset]:
         """
         Search for assets
         """
-        url = self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/search"
-        return self.request(method="POST", url=url, data=search_payload)
+        url = f"{self.assets_url}/search"
+        response = self.__request(method="POST", url=url, data=search_payload)
+        return [Asset(**item) for item in response]
 
     def update_asset(
         self,
         asset_id: int,
-        patch_payload: list[dict],
-    ) -> dict:
+        data: Asset,
+    ) -> Asset:
         """
         Patch a single TDX Asset
-
-        example patch_payload:
-        [
-            {"op": "replace", "path": "/attributes/138535", "value": "0000"},
-            {"op": "replace", "path": "/attributes/138536", "value": "last ip address"},
-            {"op": "replace", "path": "/attributes/138539", "value": "last enrolled date"},
-            {"op": "replace", "path": "/attributes/138540", "value": "last login user"},
-            {"op": "replace", "path": "/attributes/138541", "value": "make"},
-            {"op": "replace", "path": "/attributes/138542", "value": "model"}
-        ]
         """
-        url = self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/{asset_id}"
-        return self.request(method="PATCH", url=url, data=patch_payload)
+        url = f"{self.assets_url}/{asset_id}"
+        response = self.__request(method="PATCH", url=url, data=data)
+        return Asset(**response)
 
     def create_asset(
         self,
-        payload: dict,
-    ) -> dict:
+        data: Asset,
+    ) -> Asset:
         """
         Create an Asset
         """
-        url = self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets"
-        return self.request(method="POST", url=url, data=payload)
+        url = self.assets_url
+        response = self.__request(method="POST", url=url, data=data)
+        return Asset(**response)
 
     def get_asset_id_by_serial(self, serial_number: str) -> dict:
         """
@@ -304,9 +348,11 @@ class Tdx:
         """
 
         search_payload = {"SerialLike": serial_number}
-        search_url = self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/search"
+        search_url = f"{self.assets_url}/search"
 
-        search_response_json = self.request("POST", url=search_url, data=search_payload)
+        search_response_json = self.__request(
+            "POST", url=search_url, data=search_payload
+        )
 
         if len(search_response_json) > 1:
             print(
@@ -322,11 +368,12 @@ class Tdx:
         return {"ID": result}
 
     # Asset Models
-    def get_asset_models(self):
-        url = self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/models"
-        return self.request("GET", url=url)
+    def get_asset_models(self) -> List[AssetModel]:
+        url = f"{self.assets_url}/models"
+        response = self.__request("GET", url=url)
+        return AssetModel(**response)
 
-    def create_asset_model(self, asset_model, manufacturer, product_type):
+    def create_asset_model(self, asset_model, manufacturer, product_type) -> AssetModel:
         """
         Create an asset model if it doesn't already exist.
 
@@ -346,9 +393,7 @@ class Tdx:
         # We have IDs for product types and manufactuers now. So we can see if the model exists
         search_models = self.get_asset_models()
 
-        search_model_results = [
-            m["ID"] for m in search_models if m["Name"] == asset_model
-        ]
+        search_model_results = [m.ID for m in search_models if m.Name == asset_model]
 
         if len(search_model_results) > 0:
             return {
@@ -360,28 +405,24 @@ class Tdx:
             print(
                 f"Creating asset model: {asset_model}, manufacterer id: {manufacturer_id}, product type id: {product_type_id}"
             )
-            create_url = (
-                self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/models"
+            create_url = f"{self.assets_url}/models"
+            asset_model = AssetModel(
+                Name=asset_model,
+                ManufacturerID=manufacturer_id,
+                ProductTypeID=product_type_id,
             )
-            payload = {
-                "Name": asset_model,
-                "ManufacturerID": manufacturer_id,
-                "ProductTypeID": product_type_id,
-                "IsActive": True,
-            }
 
-            return self.request("POST", url=create_url, data=payload)
+            response = self.__request("POST", url=create_url, data=asset_model)
+            return AssetModel(**response)
 
     # Asset Product Types
     def get_asset_product_type_id(
         self,
         asset_product_type_name: str,
     ) -> int:
-        product_types_url = (
-            self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/models/types"
-        )
+        product_types_url = f"{self.asset_app_id}/models/types"
 
-        product_types = self.request("GET", product_types_url)
+        product_types = self.__request("GET", product_types_url)
 
         if not any(p["Name"] == asset_product_type_name for p in product_types):
             raise Exception(f"Product type {asset_product_type_name} does not exist")
@@ -395,11 +436,9 @@ class Tdx:
         self,
         asset_manufacturer_name: str,
     ) -> int:
-        manufacturers_url = (
-            self.tdx_api_base_url + f"/api/{self.asset_app_id}/assets/vendors"
-        )
+        manufacturers_url = f"{self.asset_app_id}/vendors"
 
-        manufacturers = self.request("GET", url=manufacturers_url)
+        manufacturers = self.__request("GET", url=manufacturers_url)
 
         if not any(m["Name"] == asset_manufacturer_name for m in manufacturers):
             raise Exception(
@@ -416,66 +455,42 @@ class Tdx:
     def get_kb_article(
         self,
         kb_article_id: int,
-    ) -> dict:
+    ) -> KnowledgeArticle:
         """
         Get a single KB article
         """
-        url = (
-            self.tdx_api_base_url
-            + f"/api/{self.client_portal_app_id}/knowledgebase/{kb_article_id}"
-        )
+        url = f"{self.kb_url}/{kb_article_id}"
 
-        return self.request("GET", url=url)
+        response = self.__request("GET", url=url)
+        return KnowledgeArticle(**response)
 
     def update_kb_article(
         self,
         kb_article_id: int,
-        put_payload: dict,
-    ):
+        data: KnowledgeArticle,
+    ) -> KnowledgeArticle:
         """
         Edit a KB article
-
-        put_payload example:
-
-        {
-            "Subject": "Table Import Test",
-            "Status": 3,
-            "Order": 1.0,
-            "OwningGroupID": 21194,
-            "Body": "Body of KB Article"
-        }
         """
-        url = (
-            self.tdx_api_base_url
-            + f"/api/{self.client_portal_app_id}/knowledgebase/{kb_article_id}"
-        )
-
-        return self.request("PUT", url=url, data=put_payload)
+        url = f"{self.kb_url}/{kb_article_id}"
+        response = self.__request("PUT", url=url, data=data)
+        return KnowledgeArticle(**response)
 
     def create_kb_article(
         self,
-        payload: dict,
-    ) -> dict:
+        data: KnowledgeArticle,
+    ) -> KnowledgeArticle:
         """
         Create a KB article
-
-        {
-            "Subject": "Application Inventory",
-            "Status": 3,
-            "Order": 1.0,
-            "OwningGroupID": 21194,
-            "Body": transformed_assets,
-            "CategoryID": 24493,
-            "CategoryName": "Application Inventory",
-        }
         """
-        url = self.tdx_api_base_url + f"/api/{self.client_portal_app_id}/knowledgebase"
-        return self.request(method="POST", url=url, data=payload)
+        url = self.kb_url
+        response = self.__request(method="POST", url=url, data=data)
+        return KnowledgeArticle(**response)
 
     def search_kb_articles(
         self,
         search_payload: dict,
-    ):
+    ) -> List[KnowledgeArticle]:
         """
         Search KB Articles
 
@@ -483,9 +498,7 @@ class Tdx:
             "CategoryID": 24493,
         }
         """
-        url = (
-            self.tdx_api_base_url
-            + f"/api/{self.client_portal_app_id}/knowledgebase/search"
-        )
+        url = f"{self.kb_url}/search"
 
-        return self.request("POST", url=url, data=search_payload)
+        response = self.__request("POST", url=url, data=search_payload)
+        return [KnowledgeArticle(**item) for item in response]
