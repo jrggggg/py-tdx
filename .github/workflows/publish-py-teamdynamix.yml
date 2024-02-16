@@ -1,8 +1,9 @@
 name: publish
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+    - '*'
 jobs:
   publish-to-pypi:
     name: publish-to-pypi
