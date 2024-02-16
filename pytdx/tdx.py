@@ -450,7 +450,7 @@ class Tdx:
         self,
         asset_manufacturer_name: str,
     ) -> int:
-        manufacturers_url = f"{self.asset_app_id}/vendors"
+        manufacturers_url = f"{self.assets_url}/vendors"
 
         manufacturers = self.__request("GET", url=manufacturers_url)
 
