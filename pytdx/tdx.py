@@ -434,7 +434,7 @@ class Tdx:
         self,
         asset_product_type_name: str,
     ) -> int:
-        product_types_url = f"{self.asset_app_id}/models/types"
+        product_types_url = f"{self.assets_url}/models/types"
 
         product_types = self.__request("GET", product_types_url)
 
