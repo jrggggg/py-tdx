@@ -1,5 +1,5 @@
 from typing import Optional, List
-from base_model import BaseModel
+from .base_model import BaseModel
 
 
 class AttributeChoice(BaseModel):
