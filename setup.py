@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="py-teamdynamix",
-    version="0.2.5",
+    version="0.2.6",
     author="Julien Rossow-Greenberg",
     author_email="julien.rossowgreenberg@villanova.edu",
     description="Python client for interacting with the TeamDynamix ITSM APIs",
