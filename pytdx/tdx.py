@@ -410,16 +410,6 @@ class Tdx:
         manufacturer e.g. Dell
         product_type e.g. Laptop
         """
-        # Get product type id
-        product_type_id = self.get_asset_product_type_id(
-            asset_product_type_name=product_type
-        )
-
-        # Get manufacturers
-        manufacturer_id = self.get_asset_manufacturer_id(
-            asset_manufacturer_name=manufacturer
-        )
-
         # We have IDs for product types and manufactuers now. So we can see if the model exists
         search_models = self.get_asset_models()
 
@@ -432,6 +422,15 @@ class Tdx:
         # if it doesn't already exist, create it
         else:
             # Create asset model
+            # Get product type id
+            product_type_id = self.get_asset_product_type_id(
+                asset_product_type_name=product_type
+            )
+
+            # Get manufacturers
+            manufacturer_id = self.get_asset_manufacturer_id(
+                asset_manufacturer_name=manufacturer
+            )
             logging.info(
                 f"Creating asset model: {asset_model}, manufacterer id: {manufacturer_id}, product type id: {product_type_id}"
             )
@@ -440,6 +439,7 @@ class Tdx:
                 Name=asset_model,
                 ManufacturerID=manufacturer_id,
                 ProductTypeID=product_type_id,
+                IsActive=True,
             )
 
             response = self.__request("POST", url=create_url, data=asset_model)
