@@ -1,6 +1,5 @@
 import requests
 import json
-import inspect
 from urllib.parse import urlencode
 from requests.adapters import HTTPAdapter, Retry
 import logging
@@ -165,17 +164,17 @@ class Tdx:
                 case "GET":
                     response = self.session.get(url, headers=self.default_header)
                 case "PUT":
-                    logging.info(json_data)
+                    logging.info("Request data: ", json_data)
                     response = self.session.put(
                         url, headers=self.default_header, data=json_data
                     )
                 case "PATCH":
-                    logging.info(patch_data)
+                    logging.info("Request data: ", patch_data)
                     response = self.session.patch(
                         url, headers=self.default_header, data=json_data
                     )
                 case "POST":
-                    logging.info(json_data)
+                    logging.info("Request data: ", json_data)
                     response = self.session.post(
                         url, headers=self.default_header, data=json_data
                     )
@@ -369,14 +368,14 @@ class Tdx:
         )
 
         if len(search_response_json) > 1:
-            print(
+            logging.info(
                 f"{serial_number}: more than 1 asset using this serial number in application {self.asset_app_id}"
             )
 
         try:
             result = search_response_json[0]["ID"]
         except Exception as e:
-            print(f"{serial_number}: not in TDX")
+            logging.info(f"{serial_number}: not in TDX")
             return {"error": f"Serial not in TDX {serial_number}"}
 
         return {"ID": result}
@@ -385,7 +384,7 @@ class Tdx:
     def get_asset_models(self) -> List[AssetModel]:
         url = f"{self.assets_url}/models"
         response = self.__request("GET", url=url)
-        return AssetModel(**response)
+        return [AssetModel(**item) for item in response]
 
     def create_asset_model(self, asset_model, manufacturer, product_type) -> AssetModel:
         """
@@ -416,7 +415,7 @@ class Tdx:
             }
         else:
             # Create asset model
-            print(
+            logging.info(
                 f"Creating asset model: {asset_model}, manufacterer id: {manufacturer_id}, product type id: {product_type_id}"
             )
             create_url = f"{self.assets_url}/models"
