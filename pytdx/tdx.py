@@ -43,7 +43,7 @@ class Tdx:
         self.ticketing_app_id = ticketing_app_id
         self.is_admin = is_admin
 
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.INFO)
 
         # Param checking
         if environment == "production":
@@ -162,9 +162,11 @@ class Tdx:
         try:
             match method:
                 case "GET":
+                    logging.info("Request url: ", url)
                     response = self.session.get(url, headers=self.default_header)
                 case "PUT":
                     logging.info("Request data: ", json_data)
+                    logging.info("Request url: ", url)
                     response = self.session.put(
                         url, headers=self.default_header, data=json_data
                     )
