@@ -407,13 +407,13 @@ class Tdx:
         # We have IDs for product types and manufactuers now. So we can see if the model exists
         search_models = self.get_asset_models()
 
-        search_model_results = [m.ID for m in search_models if m.Name == asset_model]
+        search_model_results = [m for m in search_models if m.Name == asset_model]
 
         if len(search_model_results) > 0:
-            return {
-                "message": f"""Asset Model: {asset_model} already exists""",
-                "ID": search_model_results[0],
-            }
+            logging.info(f"Asset model already exists: {asset_model}")
+            return search_model_results[0]
+
+        # if it doesn't already exist, create it
         else:
             # Create asset model
             logging.info(
