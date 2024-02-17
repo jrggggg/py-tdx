@@ -160,23 +160,22 @@ class Tdx:
             )
 
         try:
+            logging.info(f"Request: {method} {url}")
             match method:
                 case "GET":
-                    logging.info("Request url: ", url)
                     response = self.session.get(url, headers=self.default_header)
                 case "PUT":
-                    logging.info("Request data: ", json_data)
-                    logging.info("Request url: ", url)
+                    logging.info(f"Request data: {json_data}")
                     response = self.session.put(
                         url, headers=self.default_header, data=json_data
                     )
                 case "PATCH":
-                    logging.info("Request data: ", patch_data)
+                    logging.info(f"Request data: {json_data}")
                     response = self.session.patch(
                         url, headers=self.default_header, data=json_data
                     )
                 case "POST":
-                    logging.info("Request data: ", json_data)
+                    logging.info(f"Request data: {json_data}")
                     response = self.session.post(
                         url, headers=self.default_header, data=json_data
                     )
