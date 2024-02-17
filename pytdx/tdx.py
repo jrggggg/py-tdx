@@ -129,15 +129,23 @@ class Tdx:
         payload = []
         for attr_name, attr_value in data_dict.items():
             if attr_value is not None:
-                # Attributes require a different format, you have to spell each one out 
+                # Attributes require a different format, you have to spell each one out
                 # Attributes should be represented as a List of Dicts
                 if attr_name == "Attributes":
-                    # Iterate through list 
+                    # Iterate through list
                     for item in attr_value:
-                        # Append to payload, accessing item ID and Value k,vs. 
-                        payload.append({"op": op, "path": f"/attributes/{item["ID"]}", "value": item["Value"]})
-                else:    
-                    payload.append({"op": op, "path": f"/{attr_name}", "value": attr_value})
+                        # Append to payload, accessing item ID and Value k,vs.
+                        payload.append(
+                            {
+                                "op": op,
+                                "path": f"""/attributes/{item["ID"]}""",
+                                "value": item["Value"],
+                            }
+                        )
+                else:
+                    payload.append(
+                        {"op": op, "path": f"/{attr_name}", "value": attr_value}
+                    )
         return payload
 
     def __request(self, method: str, url: str, data=False):
