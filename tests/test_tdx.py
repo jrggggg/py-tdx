@@ -117,6 +117,15 @@ def test_get_person(tdx_client):
     assert isinstance(result, Person)
 
 
+def test_search_people(tdx_client):
+    result = tdx_client.search_people(
+        search_payload={
+            "UserName": "jrossowg@villanova.edu",
+        }
+    )
+    assert result[0].UID == "eb449a7d-df73-ee11-826a-0050f2f4736d"
+
+
 ### Admin tests
 
 """

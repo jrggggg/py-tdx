@@ -537,7 +537,7 @@ class Tdx:
         return [KnowledgeArticle(**item) for item in response]
 
     #
-    # PERSON
+    # People
     #
 
     def get_person(
@@ -551,3 +551,15 @@ class Tdx:
 
         response = self.__request("GET", url=url)
         return Person(**response)
+
+    def search_people(self, search_payload: dict) -> List[Person]:
+        """
+        Search People
+        {
+            "UserName": "jrossowg@villanova.edu",
+        }
+        """
+        url = f"{self.people_url}/search"
+
+        response = self.__request("POST", url=url, data=search_payload)
+        return [Person(**item) for item in response]
