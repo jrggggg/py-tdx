@@ -7,6 +7,7 @@ from pytdx.models.ticket import Ticket, TicketFeed, TicketType
 from pytdx.models.attribute import AttributeChoice
 from pytdx.models.asset import Asset, AssetModel
 from pytdx.models.knowledge_article import KnowledgeArticle
+from pytdx.models.person import Person
 
 conn_info_encoded = os.environ.get("TDX_SB_CONN")
 conn_info = json.loads(base64.b64decode(conn_info_encoded))
@@ -108,6 +109,12 @@ def test_update_ticket_with_mock(mocker, tdx_client):
     # Assertion
     assert updated_ticket.to_dict() == mock_updated_ticket.to_dict()
     assert isinstance(updated_ticket, Ticket)
+
+
+def test_get_person(tdx_client):
+    result = tdx_client.get_person(person_id="eb449a7d-df73-ee11-826a-0050f2f4736d")
+    assert result.UID == "eb449a7d-df73-ee11-826a-0050f2f4736d"
+    assert isinstance(result, Person)
 
 
 ### Admin tests

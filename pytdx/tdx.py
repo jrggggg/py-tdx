@@ -8,6 +8,7 @@ from .models.ticket import Ticket, TicketFeed, TicketType
 from .models.attribute import AttributeChoice
 from .models.asset import Asset, AssetModel
 from .models.knowledge_article import KnowledgeArticle
+from .models.person import Person
 
 
 class Tdx:
@@ -62,6 +63,7 @@ class Tdx:
 
         # Define urls
         self.tdx_api_base_url = f"https://{self.hostname}/{api_path}"
+        self.people_url = f"{self.tdx_api_base_url}/api/people"
         if self.ticketing_app_id:
             self.tickets_url = (
                 f"{self.tdx_api_base_url}/api/{self.ticketing_app_id}/tickets"
@@ -118,6 +120,7 @@ class Tdx:
             Asset,
             AssetModel,
             KnowledgeArticle,
+            Person,
         )
 
     def __to_patch_payload(
@@ -532,3 +535,19 @@ class Tdx:
 
         response = self.__request("POST", url=url, data=search_payload)
         return [KnowledgeArticle(**item) for item in response]
+
+    #
+    # PERSON
+    #
+
+    def get_person(
+        self,
+        person_id: int,
+    ) -> Person:
+        """
+        Get a single person
+        """
+        url = f"{self.people_url}/{person_id}"
+
+        response = self.__request("GET", url=url)
+        return Person(**response)
