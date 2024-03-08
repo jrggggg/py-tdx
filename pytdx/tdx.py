@@ -138,13 +138,22 @@ class Tdx:
                     # Iterate through list
                     for item in attr_value:
                         # Append to payload, accessing item ID and Value k,vs.
-                        payload.append(
-                            {
-                                "op": op,
-                                "path": f"""/attributes/{item["ID"]}""",
-                                "value": item["Value"],
-                            }
-                        )
+                        # if the value is None, that means we want to remove that attr -- effectively setting it to null/none
+                        if item["Value"] == None:
+                            payload.append(
+                                {
+                                    "op": "remove",
+                                    "path": f"""/attributes/{item["ID"]}""",
+                                }
+                            )
+                        else:
+                            payload.append(
+                                {
+                                    "op": op,
+                                    "path": f"""/attributes/{item["ID"]}""",
+                                    "value": item["Value"],
+                                }
+                            )
                 else:
                     payload.append(
                         {"op": op, "path": f"/{attr_name}", "value": attr_value}
