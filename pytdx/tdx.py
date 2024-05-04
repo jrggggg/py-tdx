@@ -268,7 +268,7 @@ class Tdx:
 
     def add_asset_to_ticket(self, ticket_id: int, asset_id: int):
         url = f"{self.tickets_url}/{ticket_id}/assets/{asset_id}"
-        return self.__request("POST", url=url)
+        return self.__request("POST", url=url, data={"None": "None"})
 
     def get_ticket_feed(self, id: int) -> List[TicketFeed]:
         url = f"{self.tickets_url}/{id}/feed"
